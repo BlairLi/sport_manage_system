@@ -1,0 +1,42 @@
+import { getServerSession } from "next-auth";
+import { options } from "./api/auth/[...nextauth]/options";
+import Link from "next/link";
+
+
+export default async function Home() {
+  const session = await getServerSession(options)
+
+  return (
+    <>
+      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
+      <div className="">
+        <div className="section">
+          <div className="title">Welcome to the home page!</div>
+        </div>
+        <div className="column">
+          {session ? (
+            <div className="columns">
+              <div className="column">
+                You are logged in as {session.user.name}
+              </div>
+              <div className="column">
+                <Link href="/api/auth/signout">Sign out</Link>
+              </div> 
+            </div>
+          ) : (
+            <div className="columns">
+              <div className="column">
+                You are not logged in! 
+              </div>
+              <div className="column">
+                <Link href="/api/auth/signin">Sign in</Link>
+              </div> 
+            </div>
+          )
+          }
+        </div>
+      </div>
+
+    </>
+  );
+}
