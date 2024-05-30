@@ -16,11 +16,20 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="section">
-        <div className="title">Dashboard</div>
-        <div className="subtitle">Overdue Payments</div>
-        <div className="subtitle">Cancelled this Week</div>
-        <Link href="/schedule">Built Schedule</Link>
+      <div className="columns is-vcentered">
+        <aside className="menu column">
+          <p className="menu-label">General</p>
+          <ul className="menu-list">
+            <li><a href="/Schedule">Built Schedule</a></li>
+            <li><a href="/Registration">Registration Manager</a></li>
+          </ul>
+          
+        </aside>
+        <div className="section column is-10">
+          <div className="title">Dashboard</div>
+          <div className="subtitle">Overdue Payments</div>
+          <div className="subtitle">Cancelled this Week</div>
+        </div>
       </div>
     </>
   )

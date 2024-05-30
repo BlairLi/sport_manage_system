@@ -28,9 +28,9 @@ export default async function Home() {
               <div className="column">
                 You are not logged in! 
               </div>
-              <div className="column">
+              {/* <div className="column">
                 <Link href="/api/auth/signin">Sign in</Link>
-              </div> 
+              </div>  */}
             </div>
           )
           }
