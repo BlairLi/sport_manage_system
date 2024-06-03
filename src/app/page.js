@@ -8,7 +8,6 @@ export default async function Home() {
 
   return (
     <>
-      {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
       <div className="">
         <div className="section">
           <div className="title">Welcome to the home page!</div>
@@ -19,18 +18,12 @@ export default async function Home() {
               <div className="column">
                 You are logged in as {session.user.name}
               </div>
-              <div className="column">
-                <Link href="/api/auth/signout">Sign out</Link>
-              </div> 
             </div>
           ) : (
             <div className="columns">
               <div className="column">
                 You are not logged in! 
               </div>
-              {/* <div className="column">
-                <Link href="/api/auth/signin">Sign in</Link>
-              </div>  */}
             </div>
           )
           }

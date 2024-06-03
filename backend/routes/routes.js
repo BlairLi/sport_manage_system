@@ -1,5 +1,5 @@
 import express from 'express'
-import { createSchedule, getSchedule, deleteSchedule } from '../controllers/scheduleControllers.js'
+import { createSchedule, getSchedule, deleteSchedule, addSession, getSession } from '../controllers/scheduleControllers.js'
 import { createRegistration, getRegistration, deleteRegistration } from '../controllers/registrationControllers.js'
 
 const routers=express.Router()
@@ -14,6 +14,8 @@ routers.get('/getRegistration',getRegistration)
 // routers.put('/update/:id',Updated)
 routers.delete('/deleteRegistration/:id',deleteRegistration)
 
+routers.get('/getSession',getSession)
+routers.post('/addSession/:id', addSession);
 
 
 export default routers

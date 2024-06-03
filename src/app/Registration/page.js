@@ -4,13 +4,36 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Modal from '../components/ModalRegistration';
 import ModalCancelBooking from '../components/ModalCancelBooking';
+import { useSession } from "next-auth/react";
+import AuthProvider from "../context/AuthProvider";
+
+
+// TODO amount, email, phone, parentName, childName
 
 export default function Registration() {
     const [registration, setRegistration] = useState([]);
     const [modalOpen, setmodalOpen] = useState(false);
     const [subModalOpen, setsubModalOpen] = useState(false);
     const [cancelBookingInfo, setcancelBookingInfo] = useState(null);
+    const [filterAmount, setFilterAmount] = useState('');
+    const [filterEmail, setFilterEmail] = useState('');
+    const [filterPhone, setFilterPhone] = useState('');
+    const [filterParentName, setFilterParentName] = useState('');
+    const [filterChildName, setFilterChildName] = useState('');
+    const filteredProducts = registration.filter((registration) =>
+        registration.amount.toString().includes(filterAmount.toString()) &&
+        registration.email.toLowerCase().includes(filterEmail.toLowerCase()) &&
+        registration.phone.toString().includes(filterPhone.toString()) &&
+        registration.parentName.toLowerCase().includes(filterParentName.toLowerCase()) &&
+        registration.childName.toLowerCase().includes(filterChildName.toLowerCase())
+    );
+
     const url = process.env.NEXT_PUBLIC_BACKEND_URL
+
+    const {data: session} = useSession({
+        required: true,
+        redirectTo: "/api/auth/signin?callbackUrl=/Dashboard",
+    });
 
     useEffect(() => {
         fetchRegistration();
@@ -63,90 +86,132 @@ export default function Registration() {
     }
 
     const closesubModal = () => {
-        
         setsubModalOpen(false);
     }
 
+    const resetFilters = () => {
+        setFilterAmount('');
+        setFilterEmail('');
+        setFilterPhone('');
+        setFilterParentName('');
+        setFilterChildName('');
+      };
+
     return (
-        <>
-            <div className="section">
-                <div className="title">Registration</div>
-            </div>
-            <div className="level ml-6 mr-6">
-                {/* left side */}
-                <div className="level-left">
-                    <div className="level-item">
-                        <div className="field has-addons">
-                            <p className="control">
-                                <input className="input" type="text" placeholder="Find a registration" />
-                            </p>
-                            <p className="control">
-                                <button className="button">Search</button>
-                            </p>
+        <>  
+            <AuthProvider>
+                <div className="section">
+                    <div className="title">Registration</div>
+                </div>
+                <div className="level ml-6 mr-6">
+                    {/* left side */}
+                    <div className="level-left">
+                        <div className="level-item">
+                            <div className="field has-addons">
+                                <div className="control columns">
+                                    <input
+                                        className='input column'
+                                        type="text"
+                                        placeholder="Filter by Amount"
+                                        value={filterAmount}
+                                        onChange={(e) => setFilterAmount(e.target.value)}
+                                    />
+                                    <input
+                                        className='input column'
+                                        type="text"
+                                        placeholder="Filter by Email"
+                                        value={filterEmail}
+                                        onChange={(e) => setFilterEmail(e.target.value)}
+                                    />
+                                    <input
+                                        className='input column'
+                                        type="text"
+                                        placeholder="Filter by Phone"
+                                        value={filterPhone}
+                                        onChange={(e) => setFilterPhone(e.target.value)}
+                                    />
+                                    <input
+                                        className='input column'
+                                        type="text"
+                                        placeholder="Filter by Parent Name"
+                                        value={filterParentName}
+                                        onChange={(e) => setFilterParentName(e.target.value)}
+                                    />
+                                    <input
+                                        className='input column'
+                                        type="text"
+                                        placeholder="Filter by Child Name"
+                                        value={filterChildName}
+                                        onChange={(e) => setFilterChildName(e.target.value)}
+                                    />
+                                    <div className="column"/>
+                                    <button className='button column is-warning is-small is-rounded p-1' onClick={resetFilters}>Reset</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    {/* right side */}
+                    <div className="level-right">
+                        <p className="level-item"><a className="button is-success" onClick={openModal}>New Registration</a></p>
+                    </div>
                 </div>
+                
+                {modalOpen && <Modal closeModal={closeModal} handleCreateRegistration={createRegistration}  />}
 
-                {/* right side */}
-                <div className="level-right">
-                    <p className="level-item"><a className="button is-success" onClick={openModal}>New Registration</a></p>
-                </div>
-            </div>
-            
-            {modalOpen && <Modal closeModal={closeModal} handleCreateRegistration={createRegistration}  />}
-
-            {subModalOpen && <ModalCancelBooking closeModal={closesubModal} cancelBookingInfo={cancelBookingInfo}/>}
+                {/* TODO add export to csv (later is fine)*/}
+                {subModalOpen && <ModalCancelBooking closeModal={closesubModal} cancelBookingInfo={cancelBookingInfo}/>}
 
 
-            <section className="section">
-                {registration ? 
-                <table className="table is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Parent Name</th>
-                            <th>Child Name</th>
-                            <th>Child Birth</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Program</th>
-                            <th>Amount</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Makeup Classes</th>
-                            <th>Note</th>
-                            <th>Delete?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            registration.map((r) => (
-                                <tr key={r._id} onClick={() => opensubModal(r)}>
-                                    <td>{r.bookingID}</td>
-                                    <td>{r.parentName}</td>
-                                    <td>{r.childName}</td>
-                                    <td>{r.childBirth}</td>
-                                    <td>{r.email}</td>
-                                    <td>{r.phone}</td>
-                                    <td>{r.program}</td>
-                                    <td>{r.amount}</td>
-                                    <td>{r.start}</td>
-                                    <td>{r.end}</td>
-                                    <td>{r.makeupClasses}</td>
-                                    <td>{r.note}</td>
-                                    <td>
-                                        <button className="button is-danger" onClick={deleteRegistration(r._id)}>
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
-                : <>There is nothing here</>}
-            </section>
-
+                <section className="section">
+                    {registration ? 
+                    <table className="table is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Parent Name</th>
+                                <th>Child Name</th>
+                                <th>Child Birth</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Program</th>
+                                <th>Amount</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Makeup Classes</th>
+                                <th>Note</th>
+                                <th>Delete?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                filteredProducts.map((r) => (
+                                    <tr key={r._id} onClick={() => opensubModal(r)}>
+                                        <td>{r.bookingID}</td>
+                                        <td>{r.parentName}</td>
+                                        <td>{r.childName}</td>
+                                        <td>{r.childBirth}</td>
+                                        <td>{r.email}</td>
+                                        <td>{r.phone}</td>
+                                        <td>{r.program}</td>
+                                        <td>{r.amount}</td>
+                                        <td>{r.start}</td>
+                                        <td>{r.end}</td>
+                                        <td>{r.makeupClasses}</td>
+                                        <td>{r.note}</td>
+                                        <td>
+                                            <button className="button is-danger" onClick={deleteRegistration(r._id)}>
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                    : <>There is nothing here</>}
+                </section>
+            </AuthProvider>
         </>
     )
 }

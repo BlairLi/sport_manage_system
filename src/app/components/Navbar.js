@@ -1,55 +1,56 @@
-import Link from "next/link";
+import { options } from "../api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
+// TODO ADMIN (home page)
 
-export default function Navbar() {
+export default async function Navbar() {
+    const session = await getServerSession(options)
+
     return (
-        <nav className="navbar" role="navigation" aria-label="main navigation">
+        <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
 
-        <div id="navbarBasicExample" className="navbar-menu">
-        <div className="navbar-start">
-            <a className="navbar-item" href="/">
-            Home
-            </a>
+            <div id="navbarBasicExample" className="navbar-menu">
+                <div className="navbar-start">
+                    <a className="navbar-item" href="/">
+                        Home
+                    </a>
 
-            <a className="navbar-item" href="/Dashboard">
-            Dashboard
-            </a>
+                    <a className="navbar-item" href="/Dashboard">
+                        Dashboard
+                    </a>
 
-            <div className="navbar-item has-dropdown is-hoverable">
-            <a className="navbar-link">
-                More
-            </a>
+                    <div className="navbar-item has-dropdown is-hoverable">
+                        <a className="navbar-link">
+                            More
+                        </a>
 
-            <div className="navbar-dropdown">
-                <a className="navbar-item">
-                About
-                </a>
-                {/* <a className="navbar-item is-selected">
-                Jobs
-                </a> */}
-                <a className="navbar-item">
-                Contact
-                </a>
-                <hr className="navbar-divider"/>
-                <a className="navbar-item">
-                Report an issue
-                </a>
+                        <div className="navbar-dropdown">
+                            <a className="navbar-item">
+                                About
+                            </a>
+                            <a className="navbar-item">
+                                Contact
+                            </a>
+                            <hr className="navbar-divider" />
+                            <a className="navbar-item">
+                                Report an issue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="navbar-end">
+                    <div className="navbar-item">
+                        <div className="buttons">
+                            {!session ? <a className="button is-light" href="/api/auth/signin?callbackUrl=/">
+                                Login
+                            </a> :
+                                <a className="button is-light" href="/api/auth/signout?callbackUrl=/">
+                                    Sign out
+                                </a>}
+                        </div>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
-
-        <div className="navbar-end">
-            <div className="navbar-item">
-            <div className="buttons">
-                {/* <a className="button is-primary">
-                <strong>Sign up</strong>
-                </a> */}
-                <a className="button is-light" href="/api/auth/signin?callbackUrl=/">
-                Log in
-                </a>
-            </div>
-            </div>
-        </div>
-        </div>
         </nav>
     );
 }

@@ -1,10 +1,10 @@
-import scheduleModel from "../models/Schedule.js"
+import {scheduleModel, sessionModel} from "../models/Schedule.js"
 
 const createSchedule = async (req, res) => {
   try {
-    const { SrNo, location, programName, programID, rating, startDay, nextSession, confirmed, lastNumber, capacity, sessionsAfterToday, notes } = req.body
+    const { SrNo, location, programName, programID, startDay, date, nextSession, confirmed, capacity, notes } = req.body
     const newSchedule = new scheduleModel({
-      SrNo, location, programName, programID, rating, startDay, nextSession, confirmed, lastNumber, capacity, sessionsAfterToday, notes
+      SrNo, location, programName, programID, startDay, date, nextSession, confirmed, capacity, notes
     })
     await newSchedule.save()
 
@@ -15,7 +15,51 @@ const createSchedule = async (req, res) => {
   }
 }
 
-const getSchedule = async (req, res) => {
+const addSession = async (req, res) => {
+  try {
+    const scheduleId = req.params.id;
+    const { sessionID ,startTime, endTime, location, lead, assistant1, assistant2 } = req.body;
+
+    const schedule = await scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+
+    const newSession = new sessionModel({
+      sessionID,
+      startTime,
+      endTime,
+      location,
+      lead,
+      assistant1,
+      assistant2
+    });
+
+    schedule.session.push(newSession);
+    await schedule.save();
+
+    res.status(200).json({ success: true, message: 'Session added successfully', schedule });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getSession = async (req, res) => {
+  try {
+    const scheduleId = req.params.id;
+    const schedule = await scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+    res.status(200).json({ success: true, sessions: schedule.session });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getSchedule = async (req, res) => { 
 
   try {
     const schedule = await scheduleModel.find()
@@ -60,7 +104,7 @@ const deleteSchedule = async (req, res) => {
   }
 }
 
-export { createSchedule, getSchedule, updateSchedule, deleteSchedule }
+export { createSchedule, addSession, getSession, getSchedule, updateSchedule, deleteSchedule }
 
 
 

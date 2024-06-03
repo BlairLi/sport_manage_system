@@ -1,24 +1,21 @@
-export default function Modal({ closeModal, handleCreateSchedule }) {
-    // use Schedule Schema to update the following
-    const schedule = ["SrNo", "location", "programName", "programID", "startDay", "date", "nextSession", "confirmed", "capacity", "notes"];
+export default function ModalSession({ closeModal, handleCreateSession }) {
+    // TODO: use Session Schema to update the following
+    const session = ["sessionID","startTime", "endTime", "location", "lead", "assistant1", "assistant2"];
 
-    const onScheduleSubmitted = async (e) => {
+    const onSessionSubmitted = async (e) => {
         e.preventDefault();
-        const newSchedule = {
-            SrNo: e.target.SrNo.value,
+        const newSession = {
+            sessionID: e.target.sessionID.value,
+            startTime: e.target.startTime.value,
+            endTime: e.target.endTime.value,
             location: e.target.location.value,
-            programName: e.target.programName.value,
-            programID: e.target.programID.value,
-            startDay: e.target.startDay.value,
-            date: e.target.date.value,
-            nextSession: e.target.nextSession.value,
-            confirmed: e.target.confirmed.value,
-            capacity: e.target.capacity.value,
-            notes: e.target.notes.value,
+            lead: e.target.lead.value,
+            assistant1: e.target.assistant1.value,
+            assistant2: e.target.assistant2.value
         };
 
-        console.log("newSchedule created: ", newSchedule);
-        await handleCreateSchedule(newSchedule);
+        console.log("newSession created: ", newSession);
+        await handleCreateSession(newSession);
         closeModal();
     }
 
@@ -28,12 +25,12 @@ export default function Modal({ closeModal, handleCreateSchedule }) {
                 <div className="modal-background"></div>
                 <div className="modal-card">
                     <header className="modal-card-head">
-                    <p className="modal-card-title">Create Schedule</p>
+                    <p className="modal-card-title">Create Session</p>
                     <button className="delete" aria-label="close" onClick={closeModal}></button>
                     </header>
-                    <form onSubmit={(e) => onScheduleSubmitted(e)}>
+                    <form onSubmit={(e) => onSessionSubmitted(e)}>
                         <section className="modal-card-body">
-                                {schedule.map((item, index) => {
+                                {session.map((item, index) => {
                                     return (
                                         <div className="field" key={index}>
                                             <label className="label">{item}</label>
