@@ -15,50 +15,6 @@ const createSchedule = async (req, res) => {
   }
 }
 
-const addSession = async (req, res) => {
-  try {
-    const scheduleId = req.params.id;
-    const { sessionID ,startTime, endTime, location, lead, assistant1, assistant2 } = req.body;
-
-    const schedule = await scheduleModel.findById(scheduleId);
-    if (!schedule) {
-      return res.status(404).json({ success: false, message: 'Schedule not found' });
-    }
-
-    const newSession = new sessionModel({
-      sessionID,
-      startTime,
-      endTime,
-      location,
-      lead,
-      assistant1,
-      assistant2
-    });
-
-    schedule.session.push(newSession);
-    await schedule.save();
-
-    res.status(200).json({ success: true, message: 'Session added successfully', schedule });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-};
-
-const getSession = async (req, res) => {
-  try {
-    const scheduleId = req.params.id;
-    const schedule = await scheduleModel.findById(scheduleId);
-    if (!schedule) {
-      return res.status(404).json({ success: false, message: 'Schedule not found' });
-    }
-    res.status(200).json({ success: true, sessions: schedule.session });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-};
-
 const getSchedule = async (req, res) => { 
 
   try {
@@ -104,7 +60,86 @@ const deleteSchedule = async (req, res) => {
   }
 }
 
-export { createSchedule, addSession, getSession, getSchedule, updateSchedule, deleteSchedule }
+
+const addSession = async (req, res) => {
+  try {
+    const scheduleId = req.params.id;
+    const { sessionID ,startTime, endTime, location, lead, assistant1, assistant2 } = req.body;
+
+    const schedule = await scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+
+    const newSession = new sessionModel({
+      sessionID,
+      startTime,
+      endTime,
+      location,
+      lead,
+      assistant1,
+      assistant2
+    });
+
+    schedule.session.push(newSession);
+    await schedule.save();
+
+    res.status(200).json({ success: true, message: 'Session added successfully', schedule });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getPersonSessionsDuration = async (req, res) => {
+  try {
+    const { personName } = req.query; // Assume person's name is passed as a query parameter
+
+    const schedules = await scheduleModel.find({
+      $or: [
+        { "session.lead": personName },
+        { "session.assistant1": personName },
+        { "session.assistant2": personName }
+      ]
+    });
+
+    if (!schedules || schedules.length === 0) {
+      return res.status(404).json({ success: false, message: "No schedules found for the specified person" });
+    }
+
+    let totalDuration = 0;
+
+    schedules.forEach(schedule => {
+      schedule.session.forEach(session => {
+        if (session.lead === personName || session.assistant1 === personName || session.assistant2 === personName) {
+          totalDuration += session.duration
+        }
+      });
+    });
+
+    res.status(200).json({ success: true, totalDuration });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+const getSession = async (req, res) => {
+  try {
+    const scheduleId = req.params.id;
+    const schedule = await scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+    res.status(200).json({ success: true, sessions: schedule.session });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+export { createSchedule, addSession, getSession, getSchedule, updateSchedule, deleteSchedule, getPersonSessionsDuration }
 
 
 

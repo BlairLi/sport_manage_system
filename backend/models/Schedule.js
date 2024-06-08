@@ -6,11 +6,11 @@ const sessionSchema = new mongoose.Schema({
         required: true,
     }, 
     startTime: {
-        type: String,
+        type: Date,
         required: true,
     },
     endTime: {
-        type: String,
+        type: Date,
         required: true,
     },
     location: {
@@ -30,6 +30,23 @@ const sessionSchema = new mongoose.Schema({
         required: false,
     },
 });
+
+// Add a virtual field for duration
+sessionSchema.virtual('duration').get(function () {
+    const startTime = this.startTime;
+    const endTime = this.endTime;
+
+    if (startTime && endTime) {
+        const durationInMilliseconds = endTime - startTime;
+        const durationInHours = durationInMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
+        return durationInHours;
+    }
+    return null;
+});
+
+// Ensure virtual fields are serialized
+sessionSchema.set('toJSON', { virtuals: true });
+sessionSchema.set('toObject', { virtuals: true });
 
 const scheduleSchema= new mongoose.Schema({
     SrNo:{

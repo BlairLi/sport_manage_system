@@ -10,12 +10,14 @@ export default async function Navbar() {
 
             <div id="navbarBasicExample" className="navbar-menu">
                 <div className="navbar-start">
-                    <a className="navbar-item" href="/">
+                    {/* TODO: integration */}
+                    {/* <a className="navbar-item" href="/"> */}
+                    <a className="navbar-item" href="http://localhost:5173">
                         Home
                     </a>
 
                     <a className="navbar-item" href="/Dashboard">
-                        Dashboard
+                        Admin
                     </a>
 
                     <div className="navbar-item has-dropdown is-hoverable">

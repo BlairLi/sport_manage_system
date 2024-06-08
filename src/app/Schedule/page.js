@@ -2,9 +2,12 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Modal from '../components/ModalSchedule';
-import ModalSession from '../components/ModalSession';
+import Modal from '../Components/ModalSchedule';
+import ModalSession from '../Components/ModalSession';
+import ModalDelete from '../Components/ModalDelete';
 import { useSession } from "next-auth/react";
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 
 // TODO: Roster and Schedule, Roster should be exportable(later)
@@ -15,6 +18,7 @@ export default function Schedule({ searchParams }) {
     const [registration, setRegistration] = useState([]);
     const [isdropdownDataOpen, setIsdropdownDataOpen] = useState(false);
     const [modalOpen, setmodalOpen] = useState(false);
+    const [modalDelete, setmodalDelete] = useState(false);
     const [modalSessionOpen, setmodalSessionOpen] = useState(false);
     const [dropdownRosterOpen, setdropdownRosterOpen] = useState(null);
     const [dropdownScheduleOpen, setdropdownScheduleOpen] = useState(null);
@@ -169,10 +173,9 @@ export default function Schedule({ searchParams }) {
                 </div>
             </div>
             
-            {modalOpen ? <Modal closeModal={()=>{setmodalOpen(false)}} handleCreateSchedule={createSchedule}  /> : <></> }
+            {modalOpen && <Modal closeModal={()=>{setmodalOpen(false)}} handleCreateSchedule={createSchedule}  />}
 
             <section className="section">
-
                 {schedule.length > 0 ?
                     <table className="table is-fullwidth">
                     <thead>
@@ -194,7 +197,8 @@ export default function Schedule({ searchParams }) {
                     <tbody>
                         {filteredProducts.map((s) => (
                             <>
-                                <tr key={s._id}>
+                                {modalDelete && <ModalDelete closeModal={()=>{setmodalDelete(false)}} handleDelete={deleteSchedule(s._id)}/>}
+                                <tr>
                                     <td>{s.SrNo}</td>
                                     <td>{s.location}</td>
                                     <td>{s.programName}</td>
@@ -209,7 +213,7 @@ export default function Schedule({ searchParams }) {
                                         <a onClick={()=>{
                                             setdropdownRosterOpen(s._id)
                                             }}>
-                                            Rooster
+                                            Roster
                                         </a>
                                         <div> </div>
                                         <a onClick={()=>{
@@ -219,7 +223,7 @@ export default function Schedule({ searchParams }) {
                                         </a>
                                     </td>
                                     <td>
-                                        <button className="button is-danger" onClick={deleteSchedule(s._id)}>
+                                        <button className="button is-danger" onClick={()=>{setmodalDelete(true)}}>
                                             Delete
                                         </button>
                                     </td>
@@ -227,7 +231,7 @@ export default function Schedule({ searchParams }) {
 
                                 {dropdownRosterOpen === s._id && 
                                     <>
-                                        <tr key={`${s._id}_dropdownTitle`}>
+                                        <tr>
                                             <th>Booking ID</th>
                                             <th>Parent Name</th>
                                             <th>Child Name</th>
@@ -241,9 +245,9 @@ export default function Schedule({ searchParams }) {
                                             <th></th>
                                             <th></th>
                                         </tr>
-                                        {filteredRoster(s.programName).map((r) => (
+                                        {filteredRoster(s.programName).map((r, i) => (
                                             // TODO
-                                            <tr key={`${s._id}_dropdownCin`}>
+                                            <tr key={`${s._id}_dropdownRosterItem_${i}`}>
                                                 <td>{r.bookingID}</td>
                                                 <td>{r.parentName}</td>
                                                 <td>{r.childName}</td>
@@ -283,7 +287,8 @@ export default function Schedule({ searchParams }) {
                                             <th>Session</th>
                                             <th>Start</th>
                                             <th>End</th>
-                                            <th>location</th>
+                                            <th>Duration</th>
+                                            <th>Location</th>
                                             <th>Lead</th>
                                             <th>Assistant1</th>
                                             <th>Assistant2</th>
@@ -293,11 +298,12 @@ export default function Schedule({ searchParams }) {
                                             <th></th>
                                             <th></th>
                                         </tr>
-                                        {s.session.map((s) => (
-                                            <tr>
+                                        {s.session.map((s, i) => (
+                                            <tr key={`${s._id}_dropdownScheduleItem_${i}`}>
                                                 <td>{s.sessionID}</td>
-                                                <td>{s.startTime}</td>
-                                                <td>{s.endTime}</td>
+                                                <td>{dayjs(s.startTime).format('MMMM D, YYYY h:mm A')}</td>
+                                                <td>{dayjs(s.endTime).format('MMMM D, YYYY h:mm A')}</td>
+                                                <td>{s.duration} hour(s)</td>
                                                 <td>{s.location}</td>
                                                 <td>{s.lead}</td>
                                                 <td>{s.assistant1}</td>

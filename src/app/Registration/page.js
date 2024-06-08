@@ -2,10 +2,10 @@
 
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Modal from '../components/ModalRegistration';
-import ModalCancelBooking from '../components/ModalCancelBooking';
+import Modal from '../Components/ModalRegistration';
+import ModalCancelBooking from '../Components/ModalCancelBooking';
 import { useSession } from "next-auth/react";
-import AuthProvider from "../context/AuthProvider";
+import AuthProvider from "../Context/AuthProvider";
 
 
 // TODO amount, email, phone, parentName, childName

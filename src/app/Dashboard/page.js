@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect } from "react";
-import AuthProvider from "../context/AuthProvider";
+import AuthProvider from "../Context/AuthProvider";
 
 export default function Dashboard() {
   const {data: session} = useSession({
@@ -24,6 +24,7 @@ export default function Dashboard() {
             <ul className="menu-list">
               <li><Link href="/Schedule">Built Schedule</Link></li>
               <li><Link href="/Registration">Registration Manager</Link></li>
+              <li><Link href="/Coach">Coach List</Link></li>
             </ul>
             
           </aside>
