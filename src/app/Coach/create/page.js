@@ -10,7 +10,7 @@ function CreateUser() {
   const [location, setLocation] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [hour, setHour] = useState(0);
+  const [hour, setHour] = useState("");
   const [hourlyWage, setHourlyWage] = useState("");
   const [totalSalary, setTotalSalary] = useState("");
   const [gender, setGender] = useState("");
@@ -18,6 +18,7 @@ function CreateUser() {
 //   const navigate = useNavigate();
 const router = useRouter();
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
 
   useEffect(() => {
@@ -29,7 +30,28 @@ const url = process.env.NEXT_PUBLIC_BACKEND_URL;
     calculateTotalSalary();
   }, [hour, hourlyWage]);
 
-  const handleSubmit = (e) => {
+  
+
+  const fetchTotalDuration = async (personName) => {
+    try {
+      const response = await axios.get(`${url}/api/getPersonSessionsDuration`, {
+        params: {
+          personName: personName
+        }
+      });
+      if (response.data.success) {
+        return response.data.totalDuration;
+      } else {
+        console.error(`Error: ${response.data.message}`);
+        return 0;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      return 0;
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Frontend validation: Check if any of the fields are empty
     // if (!name || !email || !phone || !location || !hour || !hourlyWage || !totalSalary || !gender) {
@@ -37,33 +59,18 @@ const url = process.env.NEXT_PUBLIC_BACKEND_URL;
       window.alert("Please fill in all fields.");
       return;
     }
-    
-    axios.get(`${url}/api/getPersonSessionsDuration`, {
-      params: {
-        personName: name
-      }
-    })
-    .then(response => {
-      console.log('response.get', response);
-      if (response.data.success) {
-        setHour(response.data.totalDuration);
-        console.log(`Total duration for ${name}: ${response.data.totalDuration} hours`);
-      } else {
-        console.error(`Error: ${response.data.message}`);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
 
-    console.log('Hour', hour);
+    const totalDuration = await fetchTotalDuration(name);
+
+    let total = parseFloat(totalDuration) * parseFloat(hourlyWage);
+    total = total.toFixed(2);
     // If all fields are filled, proceed with submitting the form
-    axios.post(`${url}/createUser`, { name, email, phone, location, hour, hourlyWage, totalSalary, gender })
+    axios.post(`${url}/createUser`, { name, email, phone, location, hour: totalDuration, hourlyWage, totalSalary: total, gender })
       .then((response) => {
         // Show success message
         window.alert("User created successfully!");
         console.log('response.post', response.data);
-        // Clear input fields  
+        // Clear input fields
         setName("");
         setLocation("");
         setEmail("");

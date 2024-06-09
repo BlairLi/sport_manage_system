@@ -53,7 +53,7 @@ function UpdateUserPayroll() {
           .then(response => {
             if (response.data.success) {
               setHour(response.data.totalDuration);
-              console.log(`Total duration for ${personName}: ${response.data.totalDuration} hours`);
+              console.log(`Total duration for ${name}: ${response.data.totalDuration} hours`);
             } else {
               console.error(`Error: ${response.data.message}`);
             }

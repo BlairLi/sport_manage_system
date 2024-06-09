@@ -25,6 +25,7 @@ export default function Dashboard() {
               <li><Link href="/Schedule">Built Schedule</Link></li>
               <li><Link href="/Registration">Registration Manager</Link></li>
               <li><Link href="/Coach">Coach List</Link></li>
+              <li><Link href="/Payroll">Payroll</Link></li>
             </ul>
             
           </aside>

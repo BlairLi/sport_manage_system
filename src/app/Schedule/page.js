@@ -4,108 +4,126 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Modal from '../Components/ModalSchedule';
 import ModalSession from '../Components/ModalSession';
+import ModalEditSchedule from '../Components/ModalEditSchedule';
 import ModalDelete from '../Components/ModalDelete';
 import { useSession } from "next-auth/react";
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-
-
-// TODO: Roster and Schedule, Roster should be exportable(later)
+import { useSchedule, useRegistration } from '../utils/useData';
+import ScheduleList from './ScheduleList';
 
 export default function Schedule({ searchParams }) {
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL
-    const [schedule, setSchedule] = useState([]);
-    const [registration, setRegistration] = useState([]);
-    const [isdropdownDataOpen, setIsdropdownDataOpen] = useState(false);
-    const [modalOpen, setmodalOpen] = useState(false);
-    const [modalDelete, setmodalDelete] = useState(false);
-    const [modalSessionOpen, setmodalSessionOpen] = useState(false);
-    const [dropdownRosterOpen, setdropdownRosterOpen] = useState(null);
-    const [dropdownScheduleOpen, setdropdownScheduleOpen] = useState(null);
+    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const [isDropdownDataOpen, setIsDropdownDataOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalDelete, setModalDelete] = useState(false);
+    const [modalSessionOpen, setModalSessionOpen] = useState(false);
+    const [modalEdit, setModalEdit] = useState(null);
+    const [dropdownRosterOpen, setDropdownRosterOpen] = useState(null);
+    const [dropdownScheduleOpen, setDropdownScheduleOpen] = useState(null);
     const [filterProgramName, setFilterProgramName] = useState('');
     const [filterDate, setFilterDate] = useState('');
-    const [filterlocation, setFilterLocation] = useState('');
+    const [filterLocation, setFilterLocation] = useState('');
 
-    const {data: session} = useSession({
+    const [schedules, setSchedules] = useState([]);
+    const [registrations, setRegistrations] = useState([]);
+
+    const { data: session } = useSession({
         required: true,
         redirectTo: "/api/auth/signin?callbackUrl=/Dashboard",
     });
 
-    const filteredProducts = schedule.filter((schedule) =>
-        schedule.programName.toLowerCase().includes(filterProgramName.toLowerCase()) &&
-        schedule.location.toLowerCase().includes(filterlocation.toLowerCase()) &&
-        schedule.date.toLowerCase().includes(filterDate.toLowerCase())
-    );
+    const { data: scheduleData, loading: scheduleLoading } = useSchedule(url);
+    const { data: registrationData, loading: registrationLoading } = useRegistration(url);
 
-    const filteredRoster = (e) => {
-        return registration.filter((registration) =>
-        registration.program.toLowerCase().includes(e.toLowerCase()))
-    }
-    
 
     useEffect(() => {
-        fetchSchedule();
-        fetchRegistration();
-    }, []);
+        if (scheduleLoading || registrationLoading) return;
+        setSchedules(scheduleData?.schedule || []);
+        setRegistrations(registrationData?.registration || []);
+    }, [scheduleData, registrationData, scheduleLoading, registrationLoading]);
 
-    const fetchSchedule = async () => {
+    const fetchSechdules = async () => {
         try {
             const response = await axios.get(`${url}/api/getSchedule`);
-            const res_data = response.data;
-            setSchedule(res_data.schedule);
+            setSchedules(response.data.schedule);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching schedules:', error);
         }
     };
 
-    const fetchRegistration = async () => {
-        try {
-            const response = await axios.get(`${url}/api/getRegistration`);
-            const res_data = response.data;
-            setRegistration(res_data.registration);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const filteredSchedules = schedules.filter((schedule) =>
+        schedule.programName.toLowerCase().includes(filterProgramName.toLowerCase()) &&
+        schedule.location.toLowerCase().includes(filterLocation.toLowerCase()) &&
+        schedule.date.toLowerCase().includes(filterDate.toLowerCase())
+    );
 
     const createSchedule = async (newSchedule) => {
         try {
             const response = await axios.post(`${url}/api/createSchedule`, newSchedule);
-            console.log('Response.data:', response.data);
-            fetchSchedule();
+            fetchSechdules();
         } catch (error) {
             console.error('Error creating schedule:', error);
             throw error;
         }
-    }
+    };
 
-    const deleteSchedule = (id) => async () => {
+    const deleteSchedule = async (id) => {
         try {
-            const response = await axios.delete(`${url}/api/deleteSchedule/${id}`);
-            console.log('Deleted Response.data:', response.data);
-            fetchSchedule();
+            await axios.delete(`${url}/api/deleteSchedule/${id}`);
+            fetchSechdules();
         } catch (error) {
             console.error('Error deleting schedule:', error);
             throw error;
         }
-    }
+    };
+
+    const editSchedule = async (id, updatedSchedule) => {
+        try {
+            await axios.put(`${url}/api/updateSchedule/${id}`, updatedSchedule);
+            fetchSechdules();
+        } catch (error) {
+            console.error('Error updating schedule:', error);
+            throw error;
+        } 
+    };
+
+    const deleteSession = async (scheudleID, sessionID) => {
+        try {
+            console.log('deleteSession', scheudleID, sessionID);
+            await axios.delete(`${url}/api/deleteSession/${scheudleID}/${sessionID}`);
+            fetchSechdules();
+        } catch (error) {
+            console.error('Error deleting session:', error);
+            throw error;
+        }
+    };
+
+    const fetchTotalDuration = async (personName) => {
+        try {
+            const response = await axios.get(`${url}/api/getPersonSessionsDuration`, {
+                params: { personName },
+            });
+            return response.data.success ? response.data.totalDuration : 0;
+        } catch (error) {
+            console.error('Error fetching total duration:', error);
+            return 0;
+        }
+    };
 
     const addSession = async (newSession) => {
         try {
-            const response = await axios.post(`${url}/api/addSession/${dropdownScheduleOpen}`, newSession);
-            console.log('addSession Response.data: ', response.data);
-            fetchSchedule();
+            await axios.post(`${url}/api/addSession/${dropdownScheduleOpen}`, newSession);
+            fetchSechdules();
         } catch (error) {
             console.error('Error adding session:', error);
             throw error;
         }
-    }
- 
+    };
+
     const resetFilters = () => {
         setFilterProgramName('');
         setFilterLocation('');
         setFilterDate('');
-      };
+    };
 
     return (
         <>
@@ -118,221 +136,95 @@ export default function Schedule({ searchParams }) {
                         <div className="field has-addons">
                             <div className="control columns">
                                 <input
-                                    className='input column'
+                                    className="input column"
                                     type="text"
                                     placeholder="Filter by Program Name"
                                     value={filterProgramName}
                                     onChange={(e) => setFilterProgramName(e.target.value)}
                                 />
                                 <input
-                                    className='input column'
+                                    className="input column"
                                     type="text"
                                     placeholder="Filter by Location"
-                                    value={filterlocation}
+                                    value={filterLocation}
                                     onChange={(e) => setFilterLocation(e.target.value)}
                                 />
-                                {/* <input
-                                    className='input column'
-                                    type="text"
-                                    placeholder="Filter by Date"
-                                    value={filterDate}
-                                    onChange={(e) => setFilterDate(e.target.value)}
-                                /> */}
-                                <div className={`dropdown ${isdropdownDataOpen && "is-active"}`} onClick={()=>{setIsdropdownDataOpen(!isdropdownDataOpen)}}>
+                                <div
+                                    className={`dropdown ${isDropdownDataOpen && "is-active"}`}
+                                    onClick={() => setIsDropdownDataOpen(!isDropdownDataOpen)}
+                                >
                                     <div className="dropdown-trigger">
                                         <button className="button" aria-haspopup="true" aria-controls="dropdown-menu3">
-                                        <span>{filterDate != ''? filterDate : 'Filter by Date'}</span>
-                                        <span className="icon is-small">
-                                            <i className="fas fa-angle-down" aria-hidden="true"></i>
-                                        </span>
+                                            <span>{filterDate !== '' ? filterDate : 'Filter by Date'}</span>
+                                            <span className="icon is-small">
+                                                <i className="fas fa-angle-down" aria-hidden="true"></i>
+                                            </span>
                                         </button>
                                     </div>
                                     <div className="dropdown-menu" id="dropdown-menu3" role="menu">
                                         <div className="dropdown-content">
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('')}>Filter by Date</a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Monday')}> Monday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Tuesday')}> Tuesday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Wednesday')}> Wednesday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Thursday')}> Thursday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Friday')}> Friday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Staterday')}> Staterday </a>
-                                        <a href="#" className="dropdown-item" onClick={() => setFilterDate('Sunday')}> Sunday </a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('')}>Filter by Date</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Monday')}>Monday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Tuesday')}>Tuesday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Wednesday')}>Wednesday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Thursday')}>Thursday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Friday')}>Friday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Saturday')}>Saturday</a>
+                                            <a href="#" className="dropdown-item" onClick={() => setFilterDate('Sunday')}>Sunday</a>
                                         </div>
                                     </div>
                                 </div>
-                                <div className='column'/>
-                                <button className='button column is-warning is-rounded is-small p-1' onClick={resetFilters}>Reset</button>
+                                <div className="column" />
+                                <button className="button column is-warning is-rounded is-small p-1" onClick={resetFilters}>Reset</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* right side */}
                 <div className="level-right">
-                    <p className="level-item"><a className="button is-success" onClick={()=>{setmodalOpen(true)}}>New Schedule</a></p>
+                    <p className="level-item">
+                        <a className="button is-success" onClick={() => setModalOpen(true)}>New Schedule</a>
+                    </p>
                 </div>
             </div>
-            
-            {modalOpen && <Modal closeModal={()=>{setmodalOpen(false)}} handleCreateSchedule={createSchedule}  />}
+
+            {modalOpen && <Modal closeModal={() => setModalOpen(false)} handleCreateSchedule={createSchedule} />}
 
             <section className="section">
-                {schedule.length > 0 ?
-                    <table className="table is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th className='is-info'>Sr. No.</th>
-                            <th className='is-info'>Location</th>
-                            <th className='is-info'>Program Name</th>
-                            <th className='is-info'>Program ID</th>
-                            <th className='is-info'>Start Day</th>
-                            <th className='is-info'>Date</th>
-                            <th className='is-info'>Next Session</th>
-                            <th className='is-info'>Confirmed</th>
-                            <th className='is-info'>Capacity</th>
-                            <th className='is-info'>Note</th>
-                            <th className='is-info'>Selection</th>
-                            <th className='is-info'>Delete?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProducts.map((s) => (
-                            <>
-                                {modalDelete && <ModalDelete closeModal={()=>{setmodalDelete(false)}} handleDelete={deleteSchedule(s._id)}/>}
-                                <tr>
-                                    <td>{s.SrNo}</td>
-                                    <td>{s.location}</td>
-                                    <td>{s.programName}</td>
-                                    <td>{s.programID}</td>
-                                    <td>{s.startDay}</td>
-                                    <td>{s.date}</td>
-                                    <td>{s.nextSession}</td>
-                                    <td>{s.confirmed}</td>
-                                    <td>{s.capacity}</td>
-                                    <td>{s.notes}</td>
-                                    <td>
-                                        <a onClick={()=>{
-                                            setdropdownRosterOpen(s._id)
-                                            }}>
-                                            Roster
-                                        </a>
-                                        <div> </div>
-                                        <a onClick={()=>{
-                                            setdropdownScheduleOpen(s._id)
-                                            }}>
-                                            Schedule
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <button className="button is-danger" onClick={()=>{setmodalDelete(true)}}>
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                {dropdownRosterOpen === s._id && 
-                                    <>
-                                        <tr>
-                                            <th>Booking ID</th>
-                                            <th>Parent Name</th>
-                                            <th>Child Name</th>
-                                            <th>Child Birth</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Program</th>
-                                            <th>Cancel?</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                        {filteredRoster(s.programName).map((r, i) => (
-                                            // TODO
-                                            <tr key={`${s._id}_dropdownRosterItem_${i}`}>
-                                                <td>{r.bookingID}</td>
-                                                <td>{r.parentName}</td>
-                                                <td>{r.childName}</td>
-                                                <td>{r.childBirth}</td>
-                                                <td>{r.email}</td>
-                                                <td>{r.phone}</td>
-                                                <td>{r.program}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        ))}
-                                        <tr>
-                                            <td colSpan="12">
-                                                <button className="button is-warning" onClick={() => {setdropdownRosterOpen(null)}}>
-                                                    Close Roster
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </>
-                                }
-
-
-                                {dropdownScheduleOpen === s._id && 
-                                    <>
-                                        <></>
-                                        {modalSessionOpen && <ModalSession closeModal={()=>{setmodalSessionOpen(false)}} handleCreateSession={addSession}/>
-                                        }
-                                        <tr>
-                                            <td colSpan="12">
-                                            <button className="button is-primary" onClick={()=>setmodalSessionOpen(true)}>Create Session</button>
-                                            </td>
-                                        </tr>
-                                        <tr >
-                                            <th>Session</th>
-                                            <th>Start</th>
-                                            <th>End</th>
-                                            <th>Duration</th>
-                                            <th>Location</th>
-                                            <th>Lead</th>
-                                            <th>Assistant1</th>
-                                            <th>Assistant2</th>
-                                            <th>Notes</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                        {s.session.map((s, i) => (
-                                            <tr key={`${s._id}_dropdownScheduleItem_${i}`}>
-                                                <td>{s.sessionID}</td>
-                                                <td>{dayjs(s.startTime).format('MMMM D, YYYY h:mm A')}</td>
-                                                <td>{dayjs(s.endTime).format('MMMM D, YYYY h:mm A')}</td>
-                                                <td>{s.duration} hour(s)</td>
-                                                <td>{s.location}</td>
-                                                <td>{s.lead}</td>
-                                                <td>{s.assistant1}</td>
-                                                <td>{s.assistant1}</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        ))}
-                                        <tr>
-                                            <td colSpan="12">
-                                                <button className="button is-warning" onClick={() => {setdropdownScheduleOpen(null)}}>
-                                                    Close Schedule
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </>
-                                } 
-                            </>
-                        ))}
-                    </tbody>
-                </table>
-                : <>There is nothing here</>}
+                {filteredSchedules.length > 0 ? (
+                    <ScheduleList
+                        schedules={schedules}
+                        filteredSchedules={filteredSchedules}
+                        registration={registrations}
+                        onDelete={deleteSchedule}
+                        onEdit={setModalEdit}
+                        onOpenRoster={setDropdownRosterOpen}
+                        onOpenSchedule={setDropdownScheduleOpen}
+                        onCloseRoster={() => setDropdownRosterOpen(null)}
+                        onCloseSchedule={() => setDropdownScheduleOpen(null)}
+                        openRosterId={dropdownRosterOpen}
+                        openScheduleId={dropdownScheduleOpen}
+                        onAddSession={() => setModalSessionOpen(true)}
+                        onDeleteSession={deleteSession}
+                    />
+                ) : (
+                    <div>There is nothing here</div>
+                )}
             </section>
+            {modalSessionOpen && (
+                <ModalSession
+                    closeModal={() => setModalSessionOpen(false)}
+                    handleCreateSession={addSession}
+                />
+            )}
+            {modalEdit && (
+                <ModalEditSchedule
+                    scheduleID={modalEdit}
+                    closeModal={() => setModalEdit(null)}
+                    handleCreateSchedule={editSchedule}
+                />  
+            )}
 
         </>
-    )
+    );
 }

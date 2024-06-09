@@ -1,4 +1,5 @@
 import {scheduleModel, sessionModel} from "../models/Schedule.js"
+import Users from '../models/Users.js';
 
 const createSchedule = async (req, res) => {
   try {
@@ -33,13 +34,13 @@ const getSchedule = async (req, res) => {
 
 const updateSchedule = async (req, res) => {
   try {
-    const programID = req.params.id
-
-    const updateuser = await usermodel.findByIdAndUpdate(userId, req.body, { new: true })
-    if (!updateuser) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    const scheduleID = req.params.id
+    
+    const updateSchedule = await scheduleModel.findByIdAndUpdate(scheduleID, req.body, { new: true })
+    if (!updateSchedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
     }
-    res.status(200).json({ success: true, message: 'User updated successfully', updateuser });
+    res.status(200).json({ success: true, message: 'Schedule updated successfully', updateSchedule });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -71,6 +72,8 @@ const addSession = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Schedule not found' });
     }
 
+    const duration = (startTime - endTime) / (1000 * 60 * 60);
+
     const newSession = new sessionModel({
       sessionID,
       startTime,
@@ -78,13 +81,56 @@ const addSession = async (req, res) => {
       location,
       lead,
       assistant1,
-      assistant2
+      assistant2,
+      duration
     });
 
     schedule.session.push(newSession);
     await schedule.save();
 
+    // Update total working hours for lead coach
+    await Users.findOneAndUpdate({ name: lead }, { $inc: { totalHours: duration } });
+
+    // Update total working hours for assistant coaches
+    if (assistant1) await Users.findOneAndUpdate({ name: assistant1 }, { $inc: { totalHours: duration } });
+    if (assistant2) await Users.findOneAndUpdate({ name: assistant2 }, { $inc: { totalHours: duration } });
+
     res.status(200).json({ success: true, message: 'Session added successfully', schedule });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const deleteSession = async (req, res) => {
+  try {
+    const { scheduleId, sessionId } = req.params;
+
+    const schedule = await scheduleModel.findById(scheduleId);
+    if (!schedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+
+    const session = schedule.session.id(sessionId);
+    if (!session) {
+      return res.status(404).json({ success: false, message: 'Session not found' });
+    }
+
+    // Calculate session duration
+    const duration = session.duration;
+
+    // Update total working hours for lead coach
+    await Users.findOneAndUpdate({ name: session.lead }, { $inc: { totalHours: -duration } });
+
+    // Update total working hours for assistant coaches
+    if (session.assistant1) await Users.findOneAndUpdate({ name: session.assistant1 }, { $inc: { totalHours: -duration } });
+    if (session.assistant2) await Users.findOneAndUpdate({ name: session.assistant2 }, { $inc: { totalHours: -duration } });
+
+    // Remove session from schedule
+    schedule.session.pull({ _id: sessionId });
+    await schedule.save();
+
+    res.status(200).json({ success: true, message: 'Session deleted successfully', schedule });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -139,7 +185,7 @@ const getSession = async (req, res) => {
 };
 
 
-export { createSchedule, addSession, getSession, getSchedule, updateSchedule, deleteSchedule, getPersonSessionsDuration }
+export { createSchedule, addSession, deleteSession, getSession, getSchedule, updateSchedule, deleteSchedule, getPersonSessionsDuration }
 
 
 

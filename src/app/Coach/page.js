@@ -3,8 +3,8 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
+import Link from "next/link";
 // import Header from "./Header";
 
 const url = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -151,7 +151,8 @@ function Coach() {
             {/* <AddButton to="/create" className="btn btn-success">Add Coach</AddButton>
             <AddButton to="/payroll" className="btn" style={{ background: "#00000063" }}>Payroll</AddButton> */}
             <a href="/Coach/create" className="button">Add Coach</a>
-            <a href="/Payroll" className="button">Payroll</a>
+            <Link href="/Payroll" className="button">Payroll</Link>
+
           </div>
         </TopDiv>
         <SearchBar 

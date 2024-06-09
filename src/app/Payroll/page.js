@@ -3,9 +3,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import * as XLSX from 'xlsx';
+import Link from "next/link";
 // import Header from "./Header";
 
 // Styled Components (unchanged)
@@ -41,7 +41,7 @@ const StyledTd = styled.td`
   overflow: hidden;
 `;
 
-const AddButton = styled(Link)`
+const AddButton = styled('a')`
   margin-left: 1vw;
 `;
 
@@ -121,7 +121,7 @@ const Payroll = () => {
           <h1>Payroll</h1>
           <div>
             <button onClick={handleExport} className="button btn-primary">Export to Excel</button>
-            <a href="/Coach" className="button btn" >Coach</a>
+            <Link href="/Coach" className="button">Coach</Link>
           </div>
         </TopDiv>
         {/* Add search input */}
@@ -151,7 +151,6 @@ const Payroll = () => {
                 <StyledTd width="20%">{user.hourlyWage}</StyledTd>
                 <StyledTd width="20%">{user.totalSalary}</StyledTd>
                 <StyledTd width="10%">
-                  {/* <Link to={`/updatePayroll/${user._id}`} className="btn btn-success">Edit</Link> */}
                   <a href={`/Payroll/update/${user._id}`} className="button is-small">Edit</a>
                 </StyledTd>
               </tr>
