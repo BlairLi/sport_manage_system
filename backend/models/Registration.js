@@ -22,12 +22,12 @@ const registrationSchema= new mongoose.Schema({
         required:true
     },
     phone:{
-            type:Number,
-            required:true
+        type:Number,
+        required:true
     },
     program:{
-            type:String,
-            required:true
+        type:String,
+        required:true
     },
     amount:{
         type:Number,
@@ -41,13 +41,25 @@ const registrationSchema= new mongoose.Schema({
         type:String,
         required:true
     },
+    secondProgram:{
+        type:String,
+        required:false
+    },
+    secondAmount:{
+        type:Number,
+        required:false
+    },
+    secondStart:{
+        type:String,
+        required:false
+    },
     makeupClasses:{
         type:String,
         required:true
     },
     notes:{
         type:String,
-        required:true
+        required:false
     },
 
 

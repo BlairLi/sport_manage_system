@@ -2,9 +2,9 @@ import registrationModel from "../models/Registration.js"
 
 const createRegistration = async (req, res) => {
   try {
-    const { bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, makeupClasses, notes } = req.body
+    const { bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes } = req.body
     const newRegistration = new registrationModel({
-      bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, makeupClasses, notes
+      bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes
     })
     await newRegistration.save()
 
