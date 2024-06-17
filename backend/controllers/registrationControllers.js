@@ -1,19 +1,30 @@
 import registrationModel from "../models/Registration.js"
+import { scheduleModel } from "../models/Schedule.js"
 
 const createRegistration = async (req, res) => {
   try {
-    const { bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes } = req.body
+    const { bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes } = req.body;
+
+    // Check for capacity of the program
+    const schedule = await scheduleModel.find({ programName: { $in: [program, secondProgram] } });
+    for (const sched of schedule) {
+      if (sched.confirmed >= sched.capacity) {
+        return res.status(400).json({ success: false, message: `Capacity reached for program: ${sched.programName}` });
+      }
+    }
+
+    // If capacity not reached, proceed to create new registration
     const newRegistration = new registrationModel({
       bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes
-    })
-    await newRegistration.save()
+    });
+    await newRegistration.save();
 
-    res.status(200).json({ success: true, message: "Registration Created Successfully.", newRegistration })
+    res.status(200).json({ success: true, message: "Registration Created Successfully.", newRegistration });
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ success: false, message: "Interl server eror" })
+    console.log(error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-}
+};
 
 const getRegistration = async (req, res) => {
 

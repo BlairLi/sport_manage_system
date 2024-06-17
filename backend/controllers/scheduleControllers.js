@@ -32,20 +32,42 @@ const getSchedule = async (req, res) => {
 
 }
 
+// TODO: update confirmed after parent has paid
 const updateSchedule = async (req, res) => {
   try {
-    const scheduleID = req.params.id
-    
-    const updateSchedule = await scheduleModel.findByIdAndUpdate(scheduleID, req.body, { new: true })
-    if (!updateSchedule) {
+    const scheduleID = req.params.id;
+
+    // Retrieve the current schedule data
+    const currentSchedule = await scheduleModel.findById(scheduleID);
+    if (!currentSchedule) {
       return res.status(404).json({ success: false, message: 'Schedule not found' });
     }
-    res.status(200).json({ success: true, message: 'Schedule updated successfully', updateSchedule });
+
+    // Filter out the fields with empty strings from req.body
+    const filteredData = {};
+    for (const key in req.body) {
+      if (req.body[key] !== '') {
+        filteredData[key] = req.body[key];
+      }
+    }
+
+    // Merge current schedule data with the filtered new data from req.body
+    const updatedData = { ...currentSchedule.toObject(), ...filteredData };
+
+    // Update the schedule document
+    const updatedSchedule = await scheduleModel.findByIdAndUpdate(scheduleID, updatedData, { new: true });
+    if (!updatedSchedule) {
+      return res.status(404).json({ success: false, message: 'Schedule not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Schedule updated successfully', updatedSchedule });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
-}
+};
+
+
 
 const deleteSchedule = async (req, res) => {
   try {
