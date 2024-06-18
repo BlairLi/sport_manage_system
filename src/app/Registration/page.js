@@ -153,7 +153,7 @@ export default function Registration() {
 
                     {/* right side */}
                     <div className="level-right">
-                        <p className="level-item"><a className="button is-success" onClick={openModal}>New Registration</a></p>
+                        <p className="level-item"><a className="button is-link" onClick={openModal}>New Registration</a></p>
                     </div>
                 </div>
                 

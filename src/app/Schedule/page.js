@@ -183,7 +183,7 @@ export default function Schedule({ searchParams }) {
 
                 <div className="level-right">
                     <p className="level-item">
-                        <a className="button is-success" onClick={() => setModalOpen(true)}>New Schedule</a>
+                        <a className="button is-link" onClick={() => setModalOpen(true)}>New Schedule</a>
                     </p>
                 </div>
             </div>

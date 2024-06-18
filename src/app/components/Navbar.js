@@ -6,7 +6,7 @@ export default async function Navbar() {
     const session = await getServerSession(options)
 
     return (
-        <nav className="navbar is-primary" role="navigation" aria-label="main navigation">
+        <nav className="navbar is-link" role="navigation" aria-label="main navigation">
 
             <div id="navbarBasicExample" className="navbar-menu">
                 <div className="navbar-start">

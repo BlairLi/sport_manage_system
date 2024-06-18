@@ -46,7 +46,7 @@ export default function Modal({ closeModal, handleCreateSchedule }) {
                         </section>
                         <footer className="modal-card-foot">
                         <div className="buttons">
-                            <button type="submit" className="button is-success">Create</button>
+                            <button type="submit" className="button is-link">Create</button>
                             <button className="button" onClick={closeModal}>Cancel</button>
                         </div>
                         </footer>

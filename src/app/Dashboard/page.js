@@ -18,16 +18,15 @@ export default function Dashboard() {
   return (
     <>
       <AuthProvider>
-        <div className="columns is-vcentered">
-          <aside className="menu column">
-            <p className="menu-label">General</p>
-            <ul className="menu-list">
-              <li><Link href="/Schedule">Built Schedule</Link></li>
-              <li><Link href="/Registration">Registration Manager</Link></li>
-              <li><Link href="/Coach">Coach List</Link></li>
-              <li><Link href="/Payroll">Payroll</Link></li>
+        <div className="" style={{height:"100%", display:"flex"}}>
+          <aside className="menu column has-background-link" style={{height:"100%", border: "1px solid black", padding: '20px'}}>
+            <p className="has-text-primary-100">General</p>
+            <ul className="" >
+              <li><Link className="has-text-primary-100" href="/Schedule">Built Schedule</Link></li>
+              <li><Link className="has-text-primary-100" href="/Registration">Registration Manager</Link></li>
+              <li><Link className="has-text-primary-100" href="/Coach">Coach List</Link></li>
+              <li><Link className="has-text-primary-100" href="/Payroll">Payroll</Link></li>
             </ul>
-            
           </aside>
           <div className="section column is-10">
             <div className="title">Dashboard</div>

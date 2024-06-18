@@ -21,7 +21,7 @@ export default function Modal({ closeModal, handleDelete }) {
                     </section>
                     <footer classNa me="modal-card-foot">
                         <div className="buttons">
-                            <button type="submit" className="button is-success" onClick={onDelete}>Create</button>
+                            <button type="submit" className="button is-link" onClick={onDelete}>Create</button>
                             <button className="button" onClick={closeModal}>Cancel</button>
                         </div>
                     </footer>

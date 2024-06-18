@@ -5,3 +5,8 @@
   /* border-style: solid;
   border-color: red; */
 }
+html, body, #__next {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

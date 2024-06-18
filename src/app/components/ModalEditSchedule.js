@@ -43,7 +43,7 @@ export default function ModalEditSchedule({ scheduleID ,closeModal, handleCreate
                         </section>
                         <footer className="modal-card-foot">
                         <div className="buttons">
-                            <button type="submit" className="button is-success">Update</button>
+                            <button type="submit" className="button is-link">Update</button>
                             <button className="button" onClick={closeModal}>Cancel</button>
                         </div>
                         </footer>

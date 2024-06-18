@@ -59,7 +59,7 @@ export default function ModalCancelBooking({ closeModal, cancelBookingInfo }) {
                         </section>
                         <footer className="modal-card-foot">
                         <div className="buttons">
-                            <button type="submit" className="button is-success">Confirm</button>
+                            <button type="submit" className="button is-link">Confirm</button>
                             <button className="button" onClick={closeModal}>Cancel</button>
                         </div>
                         </footer>
