@@ -15,7 +15,7 @@ function UpdateUser() {
     const [gender, setGender] = useState("");
     
     const router = useRouter();
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const url = process.env.MONGODB_URL;
     
     useEffect(() => {
         console.log("id", id);

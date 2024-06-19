@@ -11,7 +11,7 @@ import { useSchedule, useRegistration } from '../utils/useData';
 import ScheduleList from './ScheduleList';
 
 export default function Schedule({ searchParams }) {
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const url = process.env.NEXT_PUBLIC_MONGODB_URL;
     const [isDropdownDataOpen, setIsDropdownDataOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);

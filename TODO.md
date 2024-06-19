@@ -3,3 +3,4 @@
 3. add edit function to Schedule √
 4. connect registration with front end√
 5. Finished check capacity before make registration, alert will sound
+6. Add try catch to global url, in prevent url is not found and cause other error

@@ -7,7 +7,7 @@ import styled from "styled-components";
 import Link from "next/link";
 // import Header from "./Header";
 
-const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+const url = process.env.MONGODB_URL;
 
 const Container = styled.div`
   display: flex;
@@ -81,7 +81,6 @@ function Coach() {
   const [filterGender, setFilterGender] = useState('');
 
   useEffect(() => {
-    // axios.get('http://localhost:3001')
     axios.get(`${url}/getUser`)
       .then(result => setUsers(result.data || []))
       .catch(err => console.log(err));

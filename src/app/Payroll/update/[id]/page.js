@@ -17,7 +17,7 @@ function UpdateUserPayroll() {
     const [totalSalary, setTotalSalary] = useState("");
 
     const router = useRouter();
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const url = process.env.MONGODB_URL;
 
     useEffect(() => {
         axios.get(`${url}/getUser/` + id)

@@ -28,7 +28,7 @@ export default function Registration() {
         registration.childName.toLowerCase().includes(filterChildName.toLowerCase())
     );
 
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL
+    const url = process.env.MONGODB_URL
 
     const {data: session} = useSession({
         required: true,
