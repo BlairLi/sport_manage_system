@@ -17,7 +17,7 @@ function CreateUser() {
 
 //   const navigate = useNavigate();
 const router = useRouter();
-const url = process.env.MONGODB_URL;
+const url = process.env.NEXT_PUBLIC_MONGODB_URL;
 
 
 

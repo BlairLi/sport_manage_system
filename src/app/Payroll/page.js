@@ -58,7 +58,7 @@ const Payroll = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
 
-  const url = process.env.MONGODB_URL
+  const url = process.env.NEXT_PUBLIC_MONGODB_URL
 
   useEffect(() => {
     axios.get(`${url}/getUser`)
