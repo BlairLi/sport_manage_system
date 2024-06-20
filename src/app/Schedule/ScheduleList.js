@@ -14,6 +14,7 @@ const ScheduleList = ({
   onCloseSchedule,
   openRosterId,
   openScheduleId,
+  onAddSession,
   onDeleteSession,
 }) => (
   <table className="table is-fullwidth">

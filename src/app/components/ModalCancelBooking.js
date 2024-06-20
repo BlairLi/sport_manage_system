@@ -17,6 +17,7 @@ export default function ModalCancelBooking({ closeModal, cancelBookingInfo }) {
                     <p className="modal-card-title">Cancel Booking</p>
                     <button className="delete" aria-label="close" onClick={closeModal}></button>
                     </header>
+                    {/* TODO: Finish the onSubmit event here  */}
                     <form onSubmit={(e) => onRegistrationSubmitted(e)}>
                         <section className="modal-card-body">
                             <div>

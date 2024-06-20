@@ -63,7 +63,7 @@ export default function Registration() {
 
     const deleteRegistration = (id) => async () => {
         try {
-            const response = await axios.delete(`http://localhost:8000/api/deleteRegistration/${id}`);
+            const response = await axios.delete(`${url}/api/deleteRegistration/${id}`);
             console.log('Deleted Response.data:', response.data);
             fetchRegistration();
         } catch (error) {
@@ -180,13 +180,15 @@ export default function Registration() {
                                 <th>End</th>
                                 <th>Makeup Classes</th>
                                 <th>Note</th>
+                                <th>Cancel?</th>
                                 <th>Delete?</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 filteredProducts.map((r) => (
-                                    <tr key={r._id} onClick={() => opensubModal(r)}>
+                                    // <tr key={r._id} onClick={() => opensubModal(r)}>
+                                    <tr key={r._id}>
                                         <td>{r.bookingID}</td>
                                         <td>{r.parentName}</td>
                                         <td>{r.childName}</td>
@@ -199,6 +201,11 @@ export default function Registration() {
                                         <td>{r.end}</td>
                                         <td>{r.makeupClasses}</td>
                                         <td>{r.note}</td>
+                                        <td>
+                                            <button className="button is-link" onClick={() => opensubModal(r)}>
+                                                Cancel
+                                            </button>
+                                        </td>
                                         <td>
                                             <button className="button is-danger" onClick={deleteRegistration(r._id)}>
                                                 Delete
