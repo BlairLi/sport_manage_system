@@ -19,62 +19,67 @@ function UpdateUserPayroll() {
     const router = useRouter();
     const url = process.env.NEXT_PUBLIC_MONGODB_URL;
 
+    // get user data
     useEffect(() => {
-        axios.get(`${url}/getUser/` + id)
-            .then((result) => {
-                console.log(result);
-                setName(result.data.name);
-                setLocation(result.data.location);
-                setEmail(result.data.email);
-                setPhone(result.data.phone);
-                setHour(result.data.hour);
-                setHourlyWage(result.data.hourlyWage);
-                setTotalSalary(result.data.totalSalary);
-            })
-            .catch((err) => console.log(err));
-    }, [id]);
+      axios.get(`${url}/getUser/${id}`)
+        .then((result) => {
+          console.log(result);
+          setName(result.data.name);
+          setLocation(result.data.location);
+          setEmail(result.data.email);
+          setPhone(result.data.phone);
+          setHour(result.data.hour);
+          setHourlyWage(result.data.hourlyWage);
+          setTotalSalary(result.data.totalSalary);
+        })
+        .catch((err) => console.log(err));
+    }, [id, url]);
+  
+    // get person's session duration when name is updated
+    useEffect(() => {
+      if (name) { // Only run if name is not empty
+        axios.get(`${url}/api/getPersonSessionsDuration`, {
+          params: {
+            personName: name
+          }
+        })
+        .then(response => {
+          if (response.data.success) {
+            setHour(response.data.totalDuration);
+            console.log(`Total duration for ${name}: ${response.data.totalDuration} hours`);
+          } else {
+            console.error(`Error: ${response.data.message}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
+    }, [name, url]);
 
     useEffect(() => {
-        const calculateTotalSalary = () => {
-            const total = parseFloat(hour) * parseFloat(hourlyWage);
-            setTotalSalary(total.toFixed(2));
-        };
+      const calculateTotalSalary = () => {
+          const total = parseFloat(hour) * parseFloat(hourlyWage);
+          setTotalSalary(total.toFixed(2));
+      };
 
-        calculateTotalSalary();
+      calculateTotalSalary();
     }, [hour, hourlyWage]);
 
     const Update = (e) => {
         e.preventDefault();
-        axios.get(`${url}/api/getPersonSessionsDuration`, {
-            params: {
-              personName: name
-            }
-          })
-          .then(response => {
-            if (response.data.success) {
-              setHour(response.data.totalDuration);
-              console.log(`Total duration for ${name}: ${response.data.totalDuration} hours`);
-            } else {
-              console.error(`Error: ${response.data.message}`);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-        });
-        axios.put(`${url}/updateUser/` + id, {
-            name,
-            location,
-            email,
-            phone,
+        if (hour !== '') {
+          axios.put(`${url}/updateUser/` + id, {
             hour,
             hourlyWage,
-            totalSalary,
-        })
-            .then((result) => {
-                console.log(result);
-                router.push("/Payroll");
-            })
-            .catch((err) => console.log(err));
+            totalSalary
+          })
+          .then((result) => {
+            console.log("updated result", result.data);
+            router.push("/Payroll");
+          })
+          .catch((err) => console.log(err));
+        }
     };
 
     return (
@@ -98,7 +103,7 @@ function UpdateUserPayroll() {
                             value={totalSalary} onChange={(e) => setTotalSalary(e.target.value)} />
                     </div>
                     <button className="button btn-success">Update</button>
-                    <a to="/Payroll" className="button btn-secondary mx-2">Back</a>
+                    <a href="/Payroll" className="button btn-secondary mx-2">Back</a>
                 </form>
             </div>
         </div>

@@ -60,11 +60,52 @@ const Payroll = () => {
 
   const url = process.env.NEXT_PUBLIC_MONGODB_URL
 
+  // Dynamically fetch users and update their hours
   useEffect(() => {
     axios.get(`${url}/getUser`)
-      .then(result => setUsers(result.data))
+      .then(result => {
+        const users = result.data;
+        setUsers(users);
+
+        // Trigger updateUserHour for each user
+        const updatePromises = users.map(user => {
+          return axios.get(`${url}/api/getPersonSessionsDuration`, {
+            params: { personName: user.name }
+          })
+          .then(response => {
+            if (response.data.success) {
+              const updatedHour = response.data.totalDuration;
+
+              return axios.put(`${url}/updateUserHour/${user.name}`, { hour: updatedHour })
+                .then(updateResponse => {
+                  if (updateResponse.data.success) {
+                    console.log(`Updated hour for ${user.name}: ${updatedHour}`);
+                    return { ...user, hour: updatedHour };
+                  } else {
+                    console.error(`Failed to update hour for ${user.name}: ${updateResponse.data.message}`);
+                    return user;
+                  }
+                });
+            } else {
+              console.error(`Failed to get session duration for ${user.name}: ${response.data.message}`);
+              return user;
+            }
+          })
+          .catch(err => {
+            console.error(`Error fetching session duration for ${user.name}:`, err);
+            return user;
+          });
+        });
+
+        // Wait for all updates to complete
+        Promise.all(updatePromises)
+          .then(updatedUsers => {
+            setUsers(updatedUsers);
+          })
+          .catch(err => console.error('Error updating user hours:', err));
+      })
       .catch(err => console.log(err));
-  }, []);
+  }, [url]);
 
   const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
