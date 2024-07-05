@@ -6,7 +6,7 @@ import Modal from '../Components/ModalRegistration';
 import ModalCancelBooking from '../Components/ModalCancelBooking';
 import { useSession } from "next-auth/react";
 import AuthProvider from "../Context/AuthProvider";
-
+import ModalChildDetails from '../Components/ModalChildDetails';
 
 // TODO amount, email, phone, parentName, childName
 
@@ -20,13 +20,21 @@ export default function Registration() {
     const [filterPhone, setFilterPhone] = useState('');
     const [filterParentName, setFilterParentName] = useState('');
     const [filterChildName, setFilterChildName] = useState('');
-    const filteredProducts = registration.filter((registration) =>
-        registration.amount.toString().includes(filterAmount.toString()) &&
-        registration.email.toLowerCase().includes(filterEmail.toLowerCase()) &&
-        registration.phone.toString().includes(filterPhone.toString()) &&
-        registration.parentName.toLowerCase().includes(filterParentName.toLowerCase()) &&
-        registration.childName.toLowerCase().includes(filterChildName.toLowerCase())
+    const [childModalOpen, setChildModalOpen] = useState(false);
+    const [selectedChild, setSelectedChild] = useState(null);
+    
+    const filteredProducts = registration.filter((r) =>
+        // TODO: add amount filter && child1Name child2Name filter
+        r.child1Amount.toString().includes(filterAmount.toString()) &&
+        // (r.child1Amount2?.toString() || '').includes(filterAmount.toString()) &&
+        r.email.toLowerCase().includes(filterEmail.toLowerCase()) &&
+        r.phone.toString().includes(filterPhone.toString()) &&
+        r.parentName.toLowerCase().includes(filterParentName.toLowerCase()) &&
+        // r.child1Name.toLowerCase().includes(filterChildName.toLowerCase()) &&
+        (r.child1Name?.toLowerCase() || '').includes(filterChildName.toLowerCase()) &&
+        (r.child2Name?.toLowerCase() || '').includes(filterChildName.toLowerCase())
     );
+    
 
     const url = process.env.NEXT_PUBLIC_MONGODB_URL
 
@@ -88,6 +96,16 @@ export default function Registration() {
     const closesubModal = () => {
         setsubModalOpen(false);
     }
+
+    const openChildModal = (child) => {
+        setSelectedChild(child);
+        setChildModalOpen(true);
+      }
+    
+      const closeChildModal = () => {
+        setChildModalOpen(false);
+        setSelectedChild(null);
+      }
 
     const resetFilters = () => {
         setFilterAmount('');
@@ -162,6 +180,7 @@ export default function Registration() {
                 {/* TODO add export to csv (later is fine)*/}
                 {subModalOpen && <ModalCancelBooking closeModal={closesubModal} cancelBookingInfo={cancelBookingInfo}/>}
 
+                <ModalChildDetails isOpen={childModalOpen} closeModal={closeChildModal} child={selectedChild} />
 
                 <section className="section">
                     {registration ? 
@@ -170,14 +189,22 @@ export default function Registration() {
                             <tr>
                                 <th>Booking ID</th>
                                 <th>Parent Name</th>
-                                <th>Child Name</th>
-                                <th>Child Birth</th>
                                 <th>Email</th>
                                 <th>Phone</th>
+                                <th>First Child</th>
+                                <th>Second Child</th>
+                                {/* <th>Child Name</th>
+                                <th>Child Birth</th>
                                 <th>Program</th>
                                 <th>Amount</th>
                                 <th>Start</th>
-                                <th>End</th>
+                                <th>End</th> */}
+                                {/* <th>Child Name</th>
+                                <th>Child Birth</th>
+                                <th>Program</th>
+                                <th>Amount</th>
+                                <th>Start</th>
+                                <th>End</th> */}
                                 <th>Makeup Classes</th>
                                 <th>Note</th>
                                 <th>Cancel?</th>
@@ -191,14 +218,58 @@ export default function Registration() {
                                     <tr key={r._id}>
                                         <td>{r.bookingID}</td>
                                         <td>{r.parentName}</td>
-                                        <td>{r.childName}</td>
-                                        <td>{r.childBirth}</td>
                                         <td>{r.email}</td>
                                         <td>{r.phone}</td>
-                                        <td>{r.program}</td>
-                                        <td>{r.amount}</td>
-                                        <td>{r.start}</td>
-                                        <td>{r.end}</td>
+                                        <td>
+                                            <a onClick={() => openChildModal({ 
+                                                name: r.child1Name,
+                                                birth: r.child1Birth,
+                                                program: r.child1Program,
+                                                amount: r.child1Amount,
+                                                start: r.child1Start,
+                                                end: r.child1End,
+                                                program2: r.child1Program2,
+                                                amount2: r.child1Amount2,
+                                                start2: r.child1Start2,
+                                                end2: r.child1End2
+                                            })}>
+                                                {r.child1Name}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a onClick={() => openChildModal({ 
+                                                name: r.child2Name,
+                                                birth: r.child2Birth,
+                                                program: r.child2Program,
+                                                amount: r.child2Amount,
+                                                start: r.child2Start,
+                                                end: r.child2End,
+                                                // TODO: delete the following and make program2... optional
+                                                program2: r.child2Program2,
+                                                amount2: r.child2Amount2,
+                                                start2: r.child2Start2,
+                                                end2: r.child2End2
+                                            })}>
+                                                {r.child2Name}
+                                            </a>
+                                        </td>
+                                        {/* <td>{r.child1Name}</td>
+                                        <td>{r.child1Birth}</td>
+                                        <td>{r.child1Program}</td>
+                                        <td>{r.child1Amount}</td>
+                                        <td>{r.child1Start}</td>
+                                        <td>{r.child1End}</td> 
+                                        <td>{r.child1Program2}</td> 
+                                        <td>{r.child1Amount2}</td> 
+                                        <td>{r.child1Start2}</td> 
+                                        <td>{r.child1End2}</td>
+                                        */}
+                                        {/* <td>{r.child2Name}</td>
+                                        <td>{r.child2Birth}</td>
+                                        <td>{r.child2Program}</td>
+                                        <td>{r.child2Amount}</td>
+                                        <td>{r.child2Start}</td>
+                                        <td>{r.child2End}</td> */}
                                         <td>{r.makeupClasses}</td>
                                         <td>{r.note}</td>
                                         <td>

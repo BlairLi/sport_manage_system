@@ -1,9 +1,10 @@
 
 
 const RosterList = ({ programName, registration = [], onClose }) => {
-  const filteredRoster = registration.filter(r =>
-    r.program.toLowerCase().includes(programName.toLowerCase())
-  );
+  console.log("RosterList", programName, registration);
+  // const filteredRoster = registration.filter(r =>
+  //   r.program.toLowerCase().includes(programName.toLowerCase())
+  // );
 
   return (
     <>
@@ -17,7 +18,8 @@ const RosterList = ({ programName, registration = [], onClose }) => {
         <th>Program</th>
         <th>Cancel?</th>
       </tr>
-      {filteredRoster.map((r, i) => (
+      {/* {filteredRoster.map((r, i) => ( */}
+      {registration.map((r, i) => (
         <tr key={`${programName}_dropdownRosterItem_${i}`}>
           <td>{r.bookingID}</td>
           <td>{r.parentName}</td>

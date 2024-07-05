@@ -3,7 +3,10 @@ import { scheduleModel } from "../models/Schedule.js"
 
 const createRegistration = async (req, res) => {
   try {
-    const { bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes } = req.body;
+    // const { bookingID, } = req.body;
+
+    const { bookingID, parentName, email, phone, child1Name, child1Birth, child1Program, child1Amount, child1Start, child1End, child1Program2, child1Amount2, child1Start2, child1End2, child2Name, child2Birth, child2Program, child2Amount, child2Start, child2End, makeupClasses, notes } = req.body;
+
 
     // Check for capacity of the program
     const schedule = await scheduleModel.find({ programName: { $in: [program, secondProgram] } });
@@ -15,7 +18,7 @@ const createRegistration = async (req, res) => {
 
     // If capacity not reached, proceed to create new registration
     const newRegistration = new registrationModel({
-      bookingID, parentName, childName, childBirth, email, phone, program, amount, start, end, secondProgram, secondAmount, secondStart, makeupClasses, notes
+      bookingID, parentName, email, phone, child1Name, child1Birth, child1Program, child1Amount, child1Start, child1End, child1Program2, child1Amount2, child1Start2, child1End2, child2Name, child2Birth, child2Program, child2Amount, child2Start, child2End, makeupClasses, notes
     });
     await newRegistration.save();
 
@@ -42,6 +45,7 @@ const getRegistration = async (req, res) => {
 
 }
 
+// TODO: finish update registration
 const updateRegistration = async (req, res) => {
   try {
     const programID = req.params.id
