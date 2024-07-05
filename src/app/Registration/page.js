@@ -253,25 +253,8 @@ export default function Registration() {
                                                 {r.child2Name}
                                             </a>
                                         </td>
-                                        {/* <td>{r.child1Name}</td>
-                                        <td>{r.child1Birth}</td>
-                                        <td>{r.child1Program}</td>
-                                        <td>{r.child1Amount}</td>
-                                        <td>{r.child1Start}</td>
-                                        <td>{r.child1End}</td> 
-                                        <td>{r.child1Program2}</td> 
-                                        <td>{r.child1Amount2}</td> 
-                                        <td>{r.child1Start2}</td> 
-                                        <td>{r.child1End2}</td>
-                                        */}
-                                        {/* <td>{r.child2Name}</td>
-                                        <td>{r.child2Birth}</td>
-                                        <td>{r.child2Program}</td>
-                                        <td>{r.child2Amount}</td>
-                                        <td>{r.child2Start}</td>
-                                        <td>{r.child2End}</td> */}
                                         <td>{r.makeupClasses}</td>
-                                        <td>{r.note}</td>
+                                        <td>{r.notes}</td>
                                         <td>
                                             <button className="button is-link" onClick={() => opensubModal(r)}>
                                                 Cancel
