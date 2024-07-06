@@ -75,7 +75,7 @@ function CreateProgram() {
                             <option value="5-6">5-6</option>
                             <option value="7-8">7-8</option>
                             <option value="9-10">9-10</option>
-                            <option value="3-4">11-13</option>
+                            <option value="11-13">11-13</option>
                         </select>
                     </div>
                     <div className='mb-2'>
