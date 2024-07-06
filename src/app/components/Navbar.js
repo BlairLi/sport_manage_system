@@ -12,7 +12,7 @@ export default async function Navbar() {
                 <div className="navbar-start">
                     {/* TODO: integration */}
                     {/* <a className="navbar-item" href="/"> */}
-                    <a className="navbar-item" href="https://juniorathletics.ca/">
+                    <a className="navbar-item" href="https://juniorathletics.ca/Dashboard">
                         Home
                     </a>
 
