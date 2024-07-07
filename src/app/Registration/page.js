@@ -207,8 +207,7 @@ export default function Registration() {
                                 <th>End</th> */}
                                 <th>Makeup Classes</th>
                                 <th>Note</th>
-                                <th>Cancel?</th>
-                                <th>Delete?</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -256,12 +255,12 @@ export default function Registration() {
                                         <td>{r.makeupClasses}</td>
                                         <td>{r.notes}</td>
                                         <td>
-                                            <button className="button is-link" onClick={() => opensubModal(r)}>
+                                            <button className="button is-link is-small" onClick={() => opensubModal(r)}>
                                                 Cancel
                                             </button>
-                                        </td>
-                                        <td>
-                                            <button className="button is-danger" onClick={deleteRegistration(r._id)}>
+                                        {/* </td>
+                                        <td> */}
+                                            <button className="button is-danger is-small" onClick={deleteRegistration(r._id)}>
                                                 Delete
                                             </button>
                                         </td>

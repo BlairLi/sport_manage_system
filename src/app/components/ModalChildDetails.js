@@ -18,7 +18,7 @@ const ChildDetailModal = ({ isOpen, closeModal, child }) => {
           <p><strong>Start 1:</strong> {child.start}</p>
           <p><strong>End 1:</strong> {child.end}</p>
           <p><strong>Program 2:</strong> {child.program2 ? child.program2 : "not selected"}</p>
-          <p><strong>Amount 2:</strong> {child.amount2 ? child.amount2 : "not selected"}</p>
+          <p><strong>Amount 2:</strong> {child.amount2 ? child.amount2 : 0}</p>
           <p><strong>Start 2:</strong> {child.start2 ? child.start2 : "not selected"}</p>
           <p><strong>End 2:</strong> {child.end2 ? child.end2 : "not selected"}</p>
         </section>
