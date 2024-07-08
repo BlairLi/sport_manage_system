@@ -193,18 +193,6 @@ export default function Registration() {
                                 <th>Phone</th>
                                 <th>First Child</th>
                                 <th>Second Child</th>
-                                {/* <th>Child Name</th>
-                                <th>Child Birth</th>
-                                <th>Program</th>
-                                <th>Amount</th>
-                                <th>Start</th>
-                                <th>End</th> */}
-                                {/* <th>Child Name</th>
-                                <th>Child Birth</th>
-                                <th>Program</th>
-                                <th>Amount</th>
-                                <th>Start</th>
-                                <th>End</th> */}
                                 <th>Makeup Classes</th>
                                 <th>Note</th>
                                 <th>Action</th>
@@ -213,7 +201,6 @@ export default function Registration() {
                         <tbody>
                             {
                                 filteredProducts.map((r) => (
-                                    // <tr key={r._id} onClick={() => opensubModal(r)}>
                                     <tr key={r._id}>
                                         <td>{r.bookingID}</td>
                                         <td>{r.parentName}</td>
@@ -225,7 +212,7 @@ export default function Registration() {
                                                 birth: r.child1Birth,
                                                 program: r.child1Program,
                                                 amount: r.child1Amount,
-                                                start: r.child1Start,
+                                                start: r.child1Start || r.child2Start,
                                                 end: r.child1End,
                                                 program2: r.child1Program2,
                                                 amount2: r.child1Amount2,

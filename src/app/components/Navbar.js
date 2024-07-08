@@ -46,7 +46,7 @@ export default async function Navbar() {
                             {!session ? <a className="button is-light" href="/api/auth/signin?callbackUrl=/">
                                 Login
                             </a> :
-                                <a className="button is-light" href="/api/auth/signout?callbackUrl=/">
+                                <a className="button is-light" href="/api/auth/signout?callbackUrl=https://juniorathletics.ca/">
                                     Sign out
                                 </a>}
                         </div>
