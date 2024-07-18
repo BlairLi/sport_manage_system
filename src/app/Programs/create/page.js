@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import moment from 'moment-timezone';
 
 
 function CreateProgram() {
@@ -24,7 +25,12 @@ function CreateProgram() {
             window.alert("Please fill in all fields.");
             return;
         }
-        axios.post(`${url}/programs`, { name, time, place, fees, age, sport, location, gender })
+
+        // Convert local time to UTC with EST timezone
+        const estTimeZone = 'America/New_York';
+        const estTime = moment.tz(time, estTimeZone).toISOString();
+
+        axios.post(`${url}/programs`, { name, time: estTime, place, fees, age, sport, location, gender })
             .then(() => {
                 window.alert("Program created successfully!");
                 setName("");
