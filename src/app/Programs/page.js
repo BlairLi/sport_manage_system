@@ -170,10 +170,11 @@ function Programs() {
           />
           <FilterSelect value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)}>
             <option value="">All Ages</option>
-            <option value="3-4">3-4</option>
             <option value="5-6">5-6</option>
             <option value="7-8">7-8</option>
             <option value="9-10">9-10</option>
+            <option value="11-13">11-13</option>
+            <option value="high school">high school</option>
           </FilterSelect>
           <FilterSelect value={sportFilter} onChange={(e) => setSportFilter(e.target.value)}>
             <option value="">All Sports</option>
@@ -222,7 +223,7 @@ function Programs() {
       <StyledTd width="15%">{program.sport}</StyledTd>
       <StyledTd width="15%">{program.gender}</StyledTd>
       <StyledTd width="15%">{`${program.place} (${program.location})`}</StyledTd>
-      <StyledTd width="15%">${program.fees} per week</StyledTd>
+      <StyledTd width="15%">${program.fees} / month</StyledTd>
       <StyledTd width="10%">
         <Link href={`/Programs/update/${program._id}`} className="button is-small">Edit</Link>
         <button className="button is-danger is-small" onClick={() => handleDelete(program._id)}>Delete</button>
