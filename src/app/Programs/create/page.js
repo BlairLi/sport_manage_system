@@ -82,7 +82,7 @@ function CreateProgram() {
                             <option value="7-8">7-8</option>
                             <option value="9-10">9-10</option>
                             <option value="11-13">11-13</option>
-                            <option value="high school">high school</option>
+                            <option value="High School">High School</option>
                         </select>
                     </div>
                     <div className='mb-2'>
