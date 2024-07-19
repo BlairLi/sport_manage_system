@@ -174,7 +174,7 @@ function Programs() {
             <option value="7-8">7-8</option>
             <option value="9-10">9-10</option>
             <option value="11-13">11-13</option>
-            <option value="high school">high school</option> // Add this line
+            <option value="high school">high school</option>
           </FilterSelect>
           <FilterSelect value={sportFilter} onChange={(e) => setSportFilter(e.target.value)}>
             <option value="">All Sports</option>
