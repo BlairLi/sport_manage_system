@@ -193,6 +193,7 @@ export default function Registration() {
                                 <th>Phone</th>
                                 <th>First Child</th>
                                 <th>Second Child</th>
+                                <th>Amount</th>
                                 <th>Makeup Classes</th>
                                 <th>Note</th>
                                 <th>Action</th>
@@ -238,6 +239,12 @@ export default function Registration() {
                                             })}>
                                                 {r.child2Name}
                                             </a>
+                                        </td>
+                                        <td>
+                                            {(isNaN(r.child1Amount) ? 0 : r.child1Amount) +
+                                            (isNaN(r.child1Amount2) ? 0 : r.child1Amount2) +
+                                            (isNaN(r.child2Amount) ? 0 : r.child2Amount) +
+                                            (isNaN(r.child2Amount2) ? 0 : r.child2Amount2)}
                                         </td>
                                         <td>{r.makeupClasses}</td>
                                         <td>{r.notes}</td>
